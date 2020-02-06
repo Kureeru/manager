@@ -1,9 +1,10 @@
+import groupBy from 'lodash/groupBy';
 import isEmpty from 'lodash/isEmpty';
 import filter from 'lodash/filter';
 import some from 'lodash/some';
 
 import { Environment } from '@ovh-ux/manager-config';
-import { ANIMATED_STATUS } from './constants';
+import { ANIMATED_STATUS, MAX_NOTIFICATIONS } from './constants';
 
 export default class NotificationsCtrl {
   /* @ngInject */
@@ -13,6 +14,7 @@ export default class NotificationsCtrl {
     atInternet,
     NavbarNotifications,
     ovhManagerNavbarMenuHeaderBuilder,
+    ouiNavbarConfiguration,
     TranslateService,
   ) {
     this.$q = $q;
@@ -21,6 +23,7 @@ export default class NotificationsCtrl {
     this.NavbarBuilder = ovhManagerNavbarMenuHeaderBuilder;
     this.NavbarNotifications = NavbarNotifications;
     this.TranslateService = TranslateService;
+    this.translations = ouiNavbarConfiguration.translations;
 
     this.REGION = Environment.getRegion();
   }
@@ -40,11 +43,20 @@ export default class NotificationsCtrl {
         this.NavbarNotifications.setRefreshTime(sublinks);
         this.menuTitle = menuTitle;
         this.iconIsAnimated = NotificationsCtrl.shouldAnimateIcon(sublinks);
-        this.sublinks = sublinks;
+        if (sublinks.length > MAX_NOTIFICATIONS) {
+          this.sublinks = sublinks.slice(0, MAX_NOTIFICATIONS);
+        } else {
+          this.sublinks = sublinks;
+        }
+        this.groupedSublinks = groupBy(this.sublinks, 'time');
       })
       .finally(() => {
         this.isLoading = false;
       });
+  }
+
+  getFullSref() {
+    return `${this.state}(${JSON.stringify(this.stateParams)})`;
   }
 
   getMenuTitle() {

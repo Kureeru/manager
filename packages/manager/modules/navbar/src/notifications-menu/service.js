@@ -1,6 +1,7 @@
 import set from 'lodash/set';
 
 import moment from 'moment';
+
 import { ACTIVE_STATUS, ACKNOWLEDGED_STATUS, REFRESH_TIME } from './constants';
 
 export default class Notifications {
@@ -35,10 +36,9 @@ export default class Notifications {
   readNotifications(notification, status) {
     set(notification, 'updating', true);
 
-    return this.updateNotifications
-      .post({
-        [status]: notification.id,
-      })
+    return this.updateNotifications({
+      [status]: [notification.id],
+    })
       .then(() => {
         set(notification, 'isActive', !notification.isActive);
         set(notification, 'acknowledged', true);
@@ -68,8 +68,8 @@ export default class Notifications {
     return {
       ...notification,
       actionClicked: (toUpdate) => this.toggleSublinkAction(toUpdate),
-      acknowledged: notification.status.includes(ACKNOWLEDGED_STATUS),
-      isActive: notification.status.includes(ACTIVE_STATUS),
+      acknowledged: ACKNOWLEDGED_STATUS.includes(notification.status),
+      isActive: ACTIVE_STATUS.includes(notification.status),
       linkClicked: (toUpdate) => this.toggleSublinkAction(toUpdate, true),
       time: Notifications.formatTime(notification.date),
       url: notification.urlDetails.href,
