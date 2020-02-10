@@ -6,6 +6,7 @@ import uiRouter from '@uirouter/angularjs';
 import 'ovh-ui-angular';
 import ovhManagerCore from '@ovh-ux/manager-core';
 import ovhManagerNavbar from '@ovh-ux/manager-navbar';
+import ovhManagerHub from '@ovh-ux/manager-hub';
 
 import atInternet from './components/at-internet';
 import preload from './components/manager-preload';
@@ -23,6 +24,7 @@ angular
     'oui',
     ovhManagerCore,
     ovhManagerNavbar,
+    ovhManagerHub,
     preload,
     uiRouter,
   ])
