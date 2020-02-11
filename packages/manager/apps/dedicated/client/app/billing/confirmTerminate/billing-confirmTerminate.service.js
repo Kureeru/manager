@@ -1,14 +1,18 @@
-export default /* @ngInject */ function BillingTerminate($q, OvhHttp) {
-  this.getServiceTypeFromPrefix = function getServiceTypeFromPrefix(
-    serviceApiPrefix,
-  ) {
+export default class BillingTerminate {
+  /* @ngInject */
+  constructor(OvhHttp) {
+    this.OvhHttp = OvhHttp;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getServiceTypeFromPrefix(serviceApiPrefix) {
     return serviceApiPrefix
       .replace(/^\//, '')
       .replace(/\/\{.+$/, '')
       .replace(/\//g, '_');
-  };
+  }
 
-  this.getServiceApi = function getServiceApi(serviceId, forceRefresh) {
+  getServiceApi(serviceId, forceRefresh) {
     const params = {
       rootPath: 'apiv6',
       cache: 'billingTerminateService',
@@ -16,10 +20,10 @@ export default /* @ngInject */ function BillingTerminate($q, OvhHttp) {
     if (forceRefresh) {
       delete params.cache;
     }
-    return OvhHttp.get(`/service/${serviceId}`, params);
-  };
+    return this.OvhHttp.get(`/service/${serviceId}`, params);
+  }
 
-  this.getServiceInfo = function getServiceInfo(serviceId) {
+  getServiceInfo(serviceId) {
     let serviceType;
     return this.getServiceApi(serviceId)
       .then((serviceApi) => {
@@ -27,14 +31,14 @@ export default /* @ngInject */ function BillingTerminate($q, OvhHttp) {
         return serviceApi.route.url;
       })
       .then((url) =>
-        OvhHttp.get(`${url}/serviceInfos`, {
+        this.OvhHttp.get(`${url}/serviceInfos`, {
           rootPath: 'apiv6',
         }),
       )
       .then((serviceInfos) => ({ ...serviceInfos, serviceType }));
-  };
+  }
 
-  this.confirmTermination = function confirmTermination(
+  confirmTermination(
     serviceId,
     serviceName,
     futureUse,
@@ -45,7 +49,7 @@ export default /* @ngInject */ function BillingTerminate($q, OvhHttp) {
     return this.getServiceApi(serviceId)
       .then((serviceApi) => serviceApi.route.url)
       .then((url) =>
-        OvhHttp.post(`${url}/confirmTermination`, {
+        this.OvhHttp.post(`${url}/confirmTermination`, {
           rootPath: 'apiv6',
           data: {
             reason,
@@ -54,5 +58,5 @@ export default /* @ngInject */ function BillingTerminate($q, OvhHttp) {
           },
         }),
       );
-  };
+  }
 }
