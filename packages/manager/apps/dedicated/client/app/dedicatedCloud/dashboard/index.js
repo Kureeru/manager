@@ -6,6 +6,7 @@ import options from './tiles/options';
 import serviceManagement from './tiles/service-management';
 
 import component from './dedicatedCloud-dashboard.component';
+import state from './dedicatedCloud-dashboard.routes';
 
 const moduleName = 'ovhManagerPccDashboard';
 
@@ -21,6 +22,11 @@ angular
     'ui.router',
   ])
   .component(component.name, component)
+  .config(
+    /* @ngInject */ ($stateProvider) => {
+      $stateProvider.state(state.name, state);
+    },
+  )
   .run(/* @ngTranslationsInject:json ./translations */);
 
 export default moduleName;
